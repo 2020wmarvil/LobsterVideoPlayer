@@ -38,8 +38,7 @@ public class MyVideoPlayer : MonoBehaviour {
         videoPlayer = GetComponent<VideoPlayer>();
         btnPause.SetActive(true);
         btnPlay.SetActive(false);
-        videoPlayer.frame = (long)100;
-        progressBarWidth = progressBarBG.GetComponent<SpriteRenderer>().bounds.size.x;
+        progressBarWidth = progressBarBG.GetComponent<RectTransform>().rect.width;
     }
 
     private void Update() {
@@ -59,7 +58,6 @@ public class MyVideoPlayer : MonoBehaviour {
                 BtnPlayVideo();
             } 
             if (hitCollider != null && hitCollider.CompareTag(btnPlay.tag)) {
-                print("playBtn");
                 BtnPlayVideo();
             }
         }
