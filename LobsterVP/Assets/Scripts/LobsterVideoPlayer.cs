@@ -18,11 +18,8 @@ public class LobsterVideoPlayer : MonoBehaviour {
     bool videoIsJumping;
     VideoPlayer videoPlayer;
     
-    void Start() {
+    void Awake() {
         videoPlayer = GetComponent<VideoPlayer>();
-        PlayVideo();
-        pauseButton.SetActive(true);
-        playButton.SetActive(false);
     }
 
     void Update() {
@@ -33,6 +30,16 @@ public class LobsterVideoPlayer : MonoBehaviour {
             }
         }
     }
+
+    public void SetVideoURL(string url) {
+		videoPlayer.url = url;
+        videoPlayer.frame = 0;
+	}
+
+    public void InitializeAndPlay() {
+        gameObject.SetActive(true);
+        PlayVideo();
+	}
 
     void OpenOptions() { }
     void CloseOptions() { }
