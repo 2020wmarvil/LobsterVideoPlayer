@@ -2,6 +2,7 @@
 using UnityEngine.Video;
 using System.Collections;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class LobsterVideoPlayer : MonoBehaviour {
     [SerializeField] GameObject playButton;
@@ -12,6 +13,8 @@ public class LobsterVideoPlayer : MonoBehaviour {
     [SerializeField] Slider progressSlider;
     [SerializeField] RectTransform progressSliderBG;
 
+    PhotonView view;
+
     bool optionsOpen = false;
 
     bool knobIsDragging;
@@ -19,6 +22,7 @@ public class LobsterVideoPlayer : MonoBehaviour {
     VideoPlayer videoPlayer;
     
     void Awake() {
+        view = PhotonView.Get(this);
         videoPlayer = GetComponent<VideoPlayer>();
     }
 
@@ -38,23 +42,30 @@ public class LobsterVideoPlayer : MonoBehaviour {
 
     public void InitializeAndPlay() {
         gameObject.SetActive(true);
-        PlayVideo();
+        PlayVideo(0f);
 	}
 
     void OpenOptions() { }
     void CloseOptions() { }
 
 	#region BUTTON FUNCS
-	public void PlayVideo() {
+    public void PlayVideoButton() {
+		view.RPC("PlayForAll", RpcTarget.All, progressSlider.value);
+	}
+
+	public void PlayVideo(float t) {
+        progressSlider.value = t;
+
         videoPlayer.Play();
         pauseButton.SetActive(true);
         playButton.SetActive(false);
+
+        VideoJump();
+        StartCoroutine(DelayedSetVideoIsJumpingToFalse());
 	}
 
     public void PauseVideo() {
-        videoPlayer.Pause();
-        pauseButton.SetActive(false);
-        playButton.SetActive(true);
+		view.RPC("PauseForAll", RpcTarget.All);
     }
 
 	public void Options() {
@@ -73,10 +84,6 @@ public class LobsterVideoPlayer : MonoBehaviour {
         enterFSButton.SetActive(true);
         exitFSButton.SetActive(false);
 	}
-
-    public void OnSlider(float t) {
-        videoPlayer.time = t * videoPlayer.length;
-	}
 	#endregion
 
 	#region KNOB
@@ -86,9 +93,7 @@ public class LobsterVideoPlayer : MonoBehaviour {
 
     public void KnobOnRelease() {
         knobIsDragging = false;
-        PlayVideo();
-        VideoJump();
-        StartCoroutine(DelayedSetVideoIsJumpingToFalse());
+		view.RPC("PlayForAll", RpcTarget.All, progressSlider.value);
     }
 
     public void KnobOnDrag() {
@@ -112,4 +117,19 @@ public class LobsterVideoPlayer : MonoBehaviour {
         videoPlayer.frame = (long)frame;
     }
 	#endregion
+
+	#region NETWORKING
+
+	[PunRPC]
+	void PlayForAll(float t) {
+        PlayVideo(t);
+	}
+
+	[PunRPC]
+    void PauseForAll() {
+        videoPlayer.Pause();
+        pauseButton.SetActive(false);
+        playButton.SetActive(true);
+	}
+	#endregion 
 }

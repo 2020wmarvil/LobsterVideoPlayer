@@ -1349,6 +1349,7 @@ GameObject:
   - component: {fileID: 569337739}
   - component: {fileID: 569337738}
   - component: {fileID: 569337742}
+  - component: {fileID: 569337743}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1454,6 +1455,28 @@ MonoBehaviour:
   joinField: {fileID: 721059402}
   createLabel: {fileID: 1288760690}
   playButton: {fileID: 1070145384}
+--- !u!114 &569337743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569337737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &609358024
 GameObject:
   m_ObjectHideFlags: 0
@@ -3183,7 +3206,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1913578221}
         m_TargetAssemblyTypeName: LobsterVideoPlayer, Assembly-CSharp
-        m_MethodName: PlayVideo
+        m_MethodName: PlayVideoButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3903,6 +3926,7 @@ GameObject:
   - component: {fileID: 1913578222}
   - component: {fileID: 1913578221}
   - component: {fileID: 1913578220}
+  - component: {fileID: 1913578224}
   m_Layer: 0
   m_Name: LobsterVideoPlayer
   m_TagString: Untagged
@@ -3995,6 +4019,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1913578224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1913578219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1955649193
 GameObject:
   m_ObjectHideFlags: 0

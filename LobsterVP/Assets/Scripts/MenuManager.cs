@@ -15,6 +15,10 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 
 	bool partyReady = false;
 
+	void Awake() {
+		PhotonNetwork.ConnectUsingSettings();
+	}
+
 	void Start() {
 		lvp.gameObject.SetActive(false);
 	}
@@ -25,21 +29,22 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 	}
 
 	public void JoinButton() {
-		string code = joinField.text;
-		createLabel.text = code;
+		string roomName = joinField.text;
+		createLabel.text = roomName;
 
-		JoinRandom();
+		JoinRoom(roomName);
 	}
 
 	public void CreateButton() {
 		int length = 5;
 	    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	    string code = new string(Enumerable.Repeat(chars, length)
+	    string roomName = new string(Enumerable.Repeat(chars, length)
 			.Select(s => s[Random.Range(0, s.Length)]).ToArray());
 
-		createLabel.text = code;
+		createLabel.text = roomName;
+		GUIUtility.systemCopyBuffer = roomName;
 
-		CreateRoom();
+		CreateRoom(roomName);
 	}
 
 	public void LoadVideoButton() {
@@ -69,16 +74,22 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 	}
 
 	#region NETWORKING
-	void JoinRandom() {
-		PhotonNetwork.JoinRandomRoom();
+	// JoinRandom??  PhotonNetwork.JoinRandomRoom(); 
+
+	void JoinRoom(string roomName) {
+		PhotonNetwork.JoinRoom(roomName);
 	}
 
-	void CreateRoom() {
-		PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4 });
+	void CreateRoom(string roomName) {
+		PhotonNetwork.CreateRoom(roomName);
 	}
 
 	public override void OnPlayerEnteredRoom(Player other) {
 		print("joined");
+	}
+
+	public override void OnConnectedToMaster() {
+		print("Conneced to master");
 	}
 	#endregion
 }
