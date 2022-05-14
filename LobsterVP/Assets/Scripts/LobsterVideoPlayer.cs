@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿// TODO: make the volume slider work
+// TODO: show video progress in seconds
+// TODO: make main menu attractive
+// TODO: show party size
+// TOOD: autoload last + resume at time
+// TODO: chat
+// TODO: mobile version
+
+using UnityEngine;
 using UnityEngine.Video;
 using System.Collections;
 using UnityEngine.UI;
@@ -20,6 +28,7 @@ public class LobsterVideoPlayer : MonoBehaviour {
 
     bool knobIsDragging;
     bool videoIsJumping;
+    bool playing;
     VideoPlayer videoPlayer;
 
     float volume;
@@ -39,7 +48,11 @@ public class LobsterVideoPlayer : MonoBehaviour {
             }
 
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.K)) {
-		        view.RPC("PlayForAll", RpcTarget.All);
+                if (playing) {
+		            view.RPC("PlayForAll", RpcTarget.All);
+				} else {
+		            view.RPC("PauseForAll", RpcTarget.All);
+				}
 			}
 
             if (Input.GetKeyDown(KeyCode.M)) {
@@ -155,6 +168,7 @@ public class LobsterVideoPlayer : MonoBehaviour {
 	[PunRPC]
 	void PlayForAll() {
         videoPlayer.Play();
+        playing = true;
         pauseButton.SetActive(true);
         playButton.SetActive(false);
 	}
@@ -166,10 +180,10 @@ public class LobsterVideoPlayer : MonoBehaviour {
         StartCoroutine(DelayedSetVideoIsJumpingToFalse());
 	}
 
-
 	[PunRPC]
     void PauseForAll() {
         videoPlayer.Pause();
+        playing = false;
         pauseButton.SetActive(false);
         playButton.SetActive(true);
 	}

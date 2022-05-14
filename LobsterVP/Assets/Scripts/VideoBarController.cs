@@ -46,7 +46,7 @@ public class VideoBarController : MonoBehaviour {
 		float t = 0f;
 
 		Vector3 basePos = videoBar.transform.position;
-		Vector3 targetPos = basePos - new Vector3(0f, ySinkOffset, 0f);
+		Vector3 targetPos = basePos - new Vector3(0f, videoBar.GetComponent<RectTransform>().rect.height, 0f);
 
 		while (t < 1f) {
 			t += Time.deltaTime / hideDuration;
