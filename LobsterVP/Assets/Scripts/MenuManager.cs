@@ -14,6 +14,7 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 	[SerializeField] Button playButton;
 
 	bool partyReady = false;
+	bool canInteract = false;
 
 	void Awake() {
 		PhotonNetwork.ConnectUsingSettings();
@@ -29,6 +30,11 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 	}
 
 	public void JoinButton() {
+		if (!canInteract) {
+			createLabel.text = "Not connected";
+			return;
+		}
+
 		string roomName = joinField.text;
 		createLabel.text = roomName;
 
@@ -36,6 +42,11 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 	}
 
 	public void CreateButton() {
+		if (!canInteract) {
+			createLabel.text = "Not connected";
+			return;
+		}
+
 		int length = 5;
 	    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	    string roomName = new string(Enumerable.Repeat(chars, length)
@@ -84,12 +95,13 @@ public class MenuManager : MonoBehaviourPunCallbacks {
 		PhotonNetwork.CreateRoom(roomName);
 	}
 
-	public override void OnPlayerEnteredRoom(Player other) {
-		print("joined");
+	public override void OnConnectedToMaster() {
+		print("Conneced tomaster");
+		canInteract = true;
 	}
 
-	public override void OnConnectedToMaster() {
-		print("Conneced to master");
+	public override void OnPlayerEnteredRoom(Player other) {
+		print("joined");
 	}
 	#endregion
 }

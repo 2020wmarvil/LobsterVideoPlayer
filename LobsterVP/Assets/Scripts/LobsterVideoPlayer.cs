@@ -16,14 +16,19 @@ public class LobsterVideoPlayer : MonoBehaviour {
     PhotonView view;
 
     bool optionsOpen = false;
+    bool muted;
 
     bool knobIsDragging;
     bool videoIsJumping;
     VideoPlayer videoPlayer;
+
+    float volume;
     
     void Awake() {
         view = PhotonView.Get(this);
         videoPlayer = GetComponent<VideoPlayer>();
+
+        SetVolume(PlayerPrefs.GetFloat("volume", 0.5f));
     }
 
     void Update() {
@@ -32,6 +37,35 @@ public class LobsterVideoPlayer : MonoBehaviour {
                 float progress = (float)videoPlayer.frame / (float)videoPlayer.frameCount;
                 progressSlider.value = progress;
             }
+
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.K)) {
+		        view.RPC("PlayForAll", RpcTarget.All);
+			}
+
+            if (Input.GetKeyDown(KeyCode.M)) {
+                muted = !muted;
+                videoPlayer.SetDirectAudioMute(0, muted);
+			}
+
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                SetVolume(volume + 0.1f);
+			}
+
+            if (Input.GetKeyDown(KeyCode.DownArrow)) {
+                SetVolume(volume - 0.1f);
+			}
+
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.J)) {
+                // reverse ten sec
+                float percentChange = 10f / (float)videoPlayer.length;
+		        view.RPC("SetTimeForAll", RpcTarget.All, Mathf.Clamp01(progressSlider.value - percentChange));
+			}
+
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.L)) {
+                // forward ten sec
+                float percentChange = 10f / (float)videoPlayer.length;
+		        view.RPC("SetTimeForAll", RpcTarget.All, Mathf.Clamp01(progressSlider.value + percentChange));
+			}
         }
     }
 
@@ -42,26 +76,24 @@ public class LobsterVideoPlayer : MonoBehaviour {
 
     public void InitializeAndPlay() {
         gameObject.SetActive(true);
-        PlayVideo(0f);
+
+        if (PhotonNetwork.IsMasterClient) {
+		    view.RPC("SetTimeForAll", RpcTarget.All, progressSlider.value);
+		    view.RPC("PlayForAll", RpcTarget.All);
+		}
+	}
+
+    void SetVolume(float v) {
+        volume = Mathf.Clamp01(v);
+        videoPlayer.SetDirectAudioVolume(0, volume);
 	}
 
     void OpenOptions() { }
     void CloseOptions() { }
 
 	#region BUTTON FUNCS
-    public void PlayVideoButton() {
-		view.RPC("PlayForAll", RpcTarget.All, progressSlider.value);
-	}
-
-	public void PlayVideo(float t) {
-        progressSlider.value = t;
-
-        videoPlayer.Play();
-        pauseButton.SetActive(true);
-        playButton.SetActive(false);
-
-        VideoJump();
-        StartCoroutine(DelayedSetVideoIsJumpingToFalse());
+	public void PlayVideo() {
+		view.RPC("PlayForAll", RpcTarget.All);
 	}
 
     public void PauseVideo() {
@@ -93,7 +125,8 @@ public class LobsterVideoPlayer : MonoBehaviour {
 
     public void KnobOnRelease() {
         knobIsDragging = false;
-		view.RPC("PlayForAll", RpcTarget.All, progressSlider.value);
+        view.RPC("SetTimeForAll", RpcTarget.All, progressSlider.value);
+		view.RPC("PlayForAll", RpcTarget.All);
     }
 
     public void KnobOnDrag() {
@@ -107,7 +140,7 @@ public class LobsterVideoPlayer : MonoBehaviour {
         progressSlider.value = t;
     }
 
-    IEnumerator DelayedSetVideoIsJumpingToFalse() {
+    IEnumerator DelayedSetVideoIsJumpingToFalse() { // TOOD: try removing this and see if anything changes
         yield return new WaitForSeconds(2);
         videoIsJumping = false;
     }
@@ -119,11 +152,20 @@ public class LobsterVideoPlayer : MonoBehaviour {
 	#endregion
 
 	#region NETWORKING
+	[PunRPC]
+	void PlayForAll() {
+        videoPlayer.Play();
+        pauseButton.SetActive(true);
+        playButton.SetActive(false);
+	}
 
 	[PunRPC]
-	void PlayForAll(float t) {
-        PlayVideo(t);
+    void SetTimeForAll(float t) {
+        progressSlider.value = t;
+        VideoJump();
+        StartCoroutine(DelayedSetVideoIsJumpingToFalse());
 	}
+
 
 	[PunRPC]
     void PauseForAll() {

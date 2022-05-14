@@ -11,14 +11,7 @@ public class VideoBarController : MonoBehaviour {
 	float lastTimeMouseMoved = 0f;
 	bool hiding = false;
 
-	Vector3 basePos, targetPos;
-
 	Coroutine HideCoroutine;
-
-	void Awake() {
-		basePos = videoBar.transform.position;
-		targetPos = basePos + new Vector3(0f, -ySinkOffset, 0f);
-	}
 
 	void Update() {
 		Vector2 mousePos = Input.mousePosition;
@@ -40,7 +33,7 @@ public class VideoBarController : MonoBehaviour {
 	void Show() {
 		hiding = false;
 		StopCoroutine(HideCoroutine);
-		videoBar.transform.position = basePos;
+		videoBar.transform.localPosition = new Vector3(videoBar.transform.localPosition.x, -490f, videoBar.transform.localPosition.z);
 		videoBar.SetActive(true);
 	}
 
@@ -51,6 +44,9 @@ public class VideoBarController : MonoBehaviour {
 
 	IEnumerator HideImpl() {
 		float t = 0f;
+
+		Vector3 basePos = videoBar.transform.position;
+		Vector3 targetPos = basePos - new Vector3(0f, ySinkOffset, 0f);
 
 		while (t < 1f) {
 			t += Time.deltaTime / hideDuration;
